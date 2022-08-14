@@ -1,0 +1,7 @@
+info: {}
+paths:
+  /products:
+    get:
+      description: Returns a list of products
+      operationId: listProducts
+swagger: "2.0"

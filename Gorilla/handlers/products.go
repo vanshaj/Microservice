@@ -1,7 +1,23 @@
+// Package classification of Product API
+//
+// Documentation of Product API
+//
+// Schemes: http
+// BasePath: /
+// Version: 1.0.0
+//
+// Consumes:
+// - application/json
+//
+// Produces:
+// - application/json
+// swagger:meta
+
 package handlers
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -21,6 +37,10 @@ func NewProducts(l *log.Logger) *Products {
 	return &Products{l}
 }
 
+// swagger:route GET /products listProducts
+// Returns a list of products
+// responses:
+// 	200: productsResponse
 func (p *Products) GetProducts(resp http.ResponseWriter, req *http.Request) {
 	productList := data.GetProducts()
 	err := productList.ToJSON(resp)
@@ -65,9 +85,19 @@ func (p *Products) MiddlewareProductHandler(next http.Handler) http.Handler {
 			http.Error(resp, "Error deserializing", http.StatusBadRequest)
 			return
 		}
+
+		// validate the product
+		err = prod.Validate()
+		if err != nil {
+			p.l.Println("Error validating the product", err)
+			http.Error(resp, fmt.Sprintf("Error validating the product: %s", err), http.StatusBadRequest)
+		}
+
+		// add the product to the context
 		ctx := context.WithValue(req.Context(), KeyProduct{}, prod)
 		req = req.WithContext(ctx)
 
+		//call the next handler which can be other middleware in the chain or the final handler
 		next.ServeHTTP(resp, req)
 	})
 }

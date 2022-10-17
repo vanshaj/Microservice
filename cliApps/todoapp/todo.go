@@ -21,7 +21,6 @@ func (items *List) findIndex(task string) (int, error) {
 	for i, val := range *items {
 		if val.Task == task {
 			index = i
-			return i, nil
 		}
 	}
 	if index == -1 {

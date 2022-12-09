@@ -1,43 +1,40 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/models"
 	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/render"
 )
 
 const basePath = "/home/vanshaj/Projects/Golang/Microservice/Udemy/BasicWebApp"
 
-var Repo *Repository
+var repo *Handler
 
-type Repository struct {
+type Handler struct {
 	App *config.AppConfig
 }
 
-func NewRepo(app *config.AppConfig) *Repository {
-	return &Repository{
+func NewHandler(app *config.AppConfig) *Handler {
+	return &Handler{
 		App: app,
 	}
 }
 
-func NewHandlers(r *Repository) {
-	Repo = r
+func (r *Handler) Home(w http.ResponseWriter, req *http.Request) {
+	render.RenderTemplate(w, basePath+"/templates/home.page.tmpl", nil)
 }
 
-func (r *Repository) Home(w http.ResponseWriter, req *http.Request) {
-	if r.App.UseCache == false {
-		cache, err := render.CreateTemplateCache()
-		if err != nil {
-			fmt.Fprintln(w, "unable to create cache, reason ", err)
-			return
-		}
-		r.App.TemplateCache = cache
+func (r *Handler) About(w http.ResponseWriter, req *http.Request) {
+	render.RenderTemplate(w, basePath+"/templates/about.page.tmpl", nil)
+}
+func (r *Handler) Data(w http.ResponseWriter, req *http.Request) {
+	stringMap := map[string]string{
+		"test": "hello",
 	}
-	render.RenderTemplate(w, basePath+"/templates/home.page.tmpl")
-}
-
-func (r *Repository) About(w http.ResponseWriter, req *http.Request) {
-	render.RenderTemplate(w, basePath+"/templates/about.page.tmpl")
+	td := &models.TemplateData{
+		StringMap: stringMap,
+	}
+	render.RenderTemplate(w, basePath+"/templates/data.page.tmpl", td)
 }

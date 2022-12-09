@@ -14,17 +14,19 @@ func main() {
 		UseCache: false,
 	}
 	myCache, err := render.CreateTemplateCache()
+
 	app.TemplateCache = myCache
 	if err != nil {
 		log.Println(" failed creating cache ", err)
 		return
 	}
-	render.NewTemplate(app)
-	repo := handler.NewRepo(app)
-	handler.NewHandlers(repo)
 
-	http.HandleFunc("/home", handler.Repo.Home)
-	http.HandleFunc("/about", handler.Repo.About)
+	render.NewTemplate(app)
+	repo := handler.NewHandler(app)
+
+	http.HandleFunc("/home", repo.Home)
+	http.HandleFunc("/about", repo.About)
+	http.HandleFunc("/data", repo.Data)
 	_ = http.ListenAndServe(":8080", nil)
 
 }

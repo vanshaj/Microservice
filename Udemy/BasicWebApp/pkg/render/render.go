@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/models"
 )
 
 var app *config.AppConfig
@@ -17,9 +18,17 @@ func NewTemplate(a *config.AppConfig) {
 	app = a
 }
 
-func RenderTemplate(w http.ResponseWriter, path string) {
+func RenderTemplate(w http.ResponseWriter, path string, td *models.TemplateData) {
 	fmt.Println("LOGGER - filePath", path)
 	myCache := app.TemplateCache
+	if app.UseCache == false {
+		cache, err := CreateTemplateCache()
+		if err != nil {
+			fmt.Fprintln(w, "unable to create cache, reason ", err)
+			return
+		}
+		app.TemplateCache = cache
+	}
 	basePath := filepath.Base(path)
 	v, ok := myCache[basePath]
 	if !ok {
@@ -27,7 +36,12 @@ func RenderTemplate(w http.ResponseWriter, path string) {
 		return
 	}
 	buf := &bytes.Buffer{}
-	err := v.Execute(buf, nil)
+	var err error
+	if td == nil {
+		err = v.Execute(buf, nil)
+	} else {
+		err = v.Execute(buf, td)
+	}
 	if err != nil {
 		fmt.Fprintln(w, "Unable to execute ", basePath, " reason ", err)
 		return

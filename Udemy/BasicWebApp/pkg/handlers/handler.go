@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	render "github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/renders"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/render"
 )
 
 const basePath = "/home/vanshaj/Projects/Golang/Microservice/Udemy/BasicWebApp"

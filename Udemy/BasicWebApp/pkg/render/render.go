@@ -7,15 +7,19 @@ import (
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
 )
+
+var app *config.AppConfig
+
+func NewTemplate(a *config.AppConfig) {
+	app = a
+}
 
 func RenderTemplate(w http.ResponseWriter, path string) {
 	fmt.Println("LOGGER - filePath", path)
-	myCache, err := createCache()
-	if err != nil {
-		fmt.Fprintln(w, "Unable to render template, reason ", err)
-		return
-	}
+	myCache := app.TemplateCache
 	basePath := filepath.Base(path)
 	v, ok := myCache[basePath]
 	if !ok {
@@ -23,7 +27,7 @@ func RenderTemplate(w http.ResponseWriter, path string) {
 		return
 	}
 	buf := &bytes.Buffer{}
-	err = v.Execute(buf, nil)
+	err := v.Execute(buf, nil)
 	if err != nil {
 		fmt.Fprintln(w, "Unable to execute ", basePath, " reason ", err)
 		return
@@ -31,7 +35,7 @@ func RenderTemplate(w http.ResponseWriter, path string) {
 	buf.WriteTo(w)
 }
 
-func createCache() (map[string]*template.Template, error) {
+func CreateTemplateCache() (map[string]*template.Template, error) {
 	myCache := map[string]*template.Template{}
 	files, err := filepath.Glob("./templates/*.page.tmpl")
 	if err != nil {

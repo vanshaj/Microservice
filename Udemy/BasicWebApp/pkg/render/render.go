@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"path/filepath"
 
@@ -19,7 +18,6 @@ func NewTemplate(a *config.AppConfig) {
 }
 
 func RenderTemplate(w http.ResponseWriter, path string, td *models.TemplateData) {
-	fmt.Println("LOGGER - filePath", path)
 	myCache := app.TemplateCache
 	if app.UseCache == false {
 		cache, err := CreateTemplateCache()
@@ -57,7 +55,6 @@ func CreateTemplateCache() (map[string]*template.Template, error) {
 	}
 	for _, file := range files {
 		name := filepath.Base(file)
-		log.Print("DEBUG: ", "file path is ", file)
 		fileTemplate, err := template.New(name).ParseFiles(file)
 		if err != nil {
 			return myCache, err

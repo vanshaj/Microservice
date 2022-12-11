@@ -23,10 +23,10 @@ func main() {
 
 	render.NewTemplate(app)
 	repo := handler.NewHandler(app)
-
-	http.HandleFunc("/home", repo.Home)
-	http.HandleFunc("/about", repo.About)
-	http.HandleFunc("/data", repo.Data)
-	_ = http.ListenAndServe(":8080", nil)
+	router := routes(repo)
+	// http.HandleFunc("/home", repo.Home)
+	// http.HandleFunc("/about", repo.About)
+	// http.HandleFunc("/data", repo.Data)
+	_ = http.ListenAndServe(":8080", router)
 
 }

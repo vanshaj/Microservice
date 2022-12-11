@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
-	"path/filepath"
+	"os/exec"
+	"runtime"
 
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/russross/blackfriday/v2"
@@ -25,6 +27,7 @@ const (
 
 func main() {
 	file := flag.String("file", "", "file name to parse")
+	skipPreview := flag.Bool("skip", false, "skip preview")
 	flag.Parse()
 
 	if *file == "" {
@@ -32,14 +35,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	err := run(*file)
+	err := run(*file, os.Stdout, *skipPreview)
 	if err != nil {
 		fmt.Errorf(err.Error())
 		os.Exit(1)
 	}
 }
 
-func run(filename string) error {
+func run(filename string, out io.Writer, skipPreview bool) error {
 	file, err := os.Open(filename)
 	if err != nil {
 		return err
@@ -50,9 +53,23 @@ func run(filename string) error {
 		return err
 	}
 	htmlData := parseContent(input)
-	outName := fmt.Sprintf("%s.html", filepath.Base(filename))
-	fmt.Println(outName)
-	return saveHTML(outName, htmlData)
+
+	temp, err := ioutil.TempFile("", "mdp*.html")
+	if err != nil {
+		return err
+	}
+	if err := temp.Close(); err != nil {
+		return err
+	}
+	outName := temp.Name()
+	fmt.Fprint(out, outName)
+	if err := saveHTML(outName, htmlData); err != nil {
+		return err
+	}
+	if skipPreview {
+		return nil
+	}
+	return preview(outName)
 }
 
 func parseContent(input []byte) []byte {
@@ -68,4 +85,22 @@ func parseContent(input []byte) []byte {
 
 func saveHTML(filename string, htmlData []byte) error {
 	return os.WriteFile(filename, htmlData, 0644)
+}
+
+func preview(fileName string) error {
+	cName := ""
+	var cParams []string
+	switch runtime.GOOS {
+	case "windows":
+		cName = "cmd.exe"
+		cParams = []string{"/C", "start"}
+	default:
+		return fmt.Errorf("OS not supported")
+	}
+	cParams = append(cParams, fileName)
+	cPath, err := exec.LookPath(cName)
+	if err != nil {
+		return err
+	}
+	return exec.Command(cPath, cParams...).Run()
 }

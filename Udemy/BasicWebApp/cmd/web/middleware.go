@@ -23,6 +23,15 @@ func SetCookie(next http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
+func GetIP(next http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, req *http.Request) {
+		remoteIP := req.RemoteAddr
+		fmt.Println("remote ip is ", remoteIP)
+		next.ServeHTTP(w, req)
+	}
+	return http.HandlerFunc(fn)
+}
+
 func SessionLoad(next http.Handler) http.Handler {
 	return app.SessionManager.LoadAndSave(next)
 }

@@ -3,16 +3,27 @@ package main
 import (
 	"log"
 	"net/http"
+	"time"
 
+	scs "github.com/alexedwards/scs/v2"
 	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
 	handler "github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/handlers"
 	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/render"
 )
 
+var app *config.AppConfig
+
 func main() {
-	app := &config.AppConfig{
-		UseCache: false,
+	app = &config.AppConfig{
+		UseCache:     false,
+		InProduction: false,
 	}
+	session := scs.New()
+	session.Lifetime = 24 * time.Hour
+	session.Cookie.Persist = true
+	session.Cookie.SameSite = http.SameSiteLaxMode
+	session.Cookie.Secure = app.InProduction
+	app.SessionManager = session
 	myCache, err := render.CreateTemplateCache()
 
 	app.TemplateCache = myCache

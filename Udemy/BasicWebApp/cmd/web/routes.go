@@ -10,6 +10,7 @@ import (
 func routes(repo *handler.Handler) http.Handler {
 	mux := chi.NewRouter()
 	mux.Use(SetCookie)
+	mux.Use(SessionLoad)
 	mux.Get("/", repo.Home)
 	mux.Get("/about", repo.About)
 	mux.Get("/data", repo.Data)

@@ -22,3 +22,7 @@ func SetCookie(next http.Handler) http.Handler {
 	}
 	return http.HandlerFunc(fn)
 }
+
+func SessionLoad(next http.Handler) http.Handler {
+	return app.SessionManager.LoadAndSave(next)
+}

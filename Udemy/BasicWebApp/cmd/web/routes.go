@@ -1,27 +1,37 @@
 package main
 
 import (
+	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/middleware"
+	"github.com/tsawler/bookings-app/internal/config"
+	"github.com/tsawler/bookings-app/internal/handlers"
 	"net/http"
-
-	chi "github.com/go-chi/chi/v5"
-	handler "github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/handlers"
 )
 
-func routes(repo *handler.Handler) http.Handler {
+func routes(app *config.AppConfig) http.Handler {
 	mux := chi.NewRouter()
-	mux.Use(SetCookie)
-	mux.Use(GetIP)
-	mux.Use(SessionLoad)
+
+	mux.Use(middleware.Recoverer)
 	mux.Use(NoSurf)
-	mux.Get("/", repo.Home)
-	mux.Get("/about", repo.About)
-	mux.Get("/make-reservation", repo.Reservation)
-	mux.Get("/generals", repo.Generals)
-	mux.Get("/majors", repo.Majors)
-	mux.Get("/search-availability", repo.Availability)
-	mux.Post("/search-availability", repo.PostAvailability)
-	mux.Get("/contact", repo.Contact)
-	fileServer := http.FileServer(http.Dir("./static"))
+	mux.Use(SessionLoad)
+
+	mux.Get("/", handlers.Repo.Home)
+	mux.Get("/about", handlers.Repo.About)
+	mux.Get("/generals-quarters", handlers.Repo.Generals)
+	mux.Get("/majors-suite", handlers.Repo.Majors)
+
+	mux.Get("/search-availability", handlers.Repo.Availability)
+	mux.Post("/search-availability", handlers.Repo.PostAvailability)
+	mux.Post("/search-availability-json", handlers.Repo.AvailabilityJSON)
+
+	mux.Get("/contact", handlers.Repo.Contact)
+
+	mux.Get("/make-reservation", handlers.Repo.Reservation)
+	mux.Post("/make-reservation", handlers.Repo.PostReservation)
+	mux.Get("/reservation-summary", handlers.Repo.ReservationSummary)
+
+	fileServer := http.FileServer(http.Dir("./static/"))
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+
 	return mux
 }

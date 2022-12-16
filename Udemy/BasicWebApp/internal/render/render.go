@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/models"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/models"
 )
 
 var app *config.AppConfig
@@ -38,6 +38,7 @@ func RenderTemplate(w http.ResponseWriter, path string, td *models.TemplateData)
 	if td == nil {
 		err = v.Execute(buf, nil)
 	} else {
+		fmt.Println("Template data is ", td.CSRFToken)
 		err = v.Execute(buf, td)
 	}
 	if err != nil {

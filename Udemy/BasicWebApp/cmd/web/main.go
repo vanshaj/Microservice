@@ -6,9 +6,9 @@ import (
 	"time"
 
 	scs "github.com/alexedwards/scs/v2"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
-	handler "github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/handlers"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/render"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	handler "github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/handlers"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/render"
 )
 
 var app *config.AppConfig

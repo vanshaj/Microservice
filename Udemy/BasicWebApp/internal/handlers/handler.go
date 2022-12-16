@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/models"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/pkg/render"
+	"github.com/justinas/nosurf"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/models"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/render"
 )
 
 const basePath = "/home/vanshaj/Projects/Golang/Microservice/Udemy/BasicWebApp"
@@ -48,7 +52,35 @@ func (r *Handler) Majors(w http.ResponseWriter, req *http.Request) {
 	render.RenderTemplate(w, basePath+"/templates/majors.page.tmpl", nil)
 }
 func (r *Handler) Availability(w http.ResponseWriter, req *http.Request) {
-	render.RenderTemplate(w, basePath+"/templates/search-availability.page.tmpl", nil)
+	token := nosurf.Token(req)
+	fmt.Println(token)
+	render.RenderTemplate(w, basePath+"/templates/search-availability.page.tmpl", &models.TemplateData{CSRFToken: token})
+}
+func (r *Handler) PostAvailability(w http.ResponseWriter, req *http.Request) {
+	start := req.Form.Get("start")
+	end := req.Form.Get("end")
+	w.Write([]byte(fmt.Sprintf("Starts at %s , ends at %s", start, end)))
+}
+
+type jsonResponse struct {
+	OK      bool   `json:"ok"`
+	Message string `json:"message"`
+}
+
+// AvailabilityJSON handles request for availability and sends JSON response
+func (m *Handler) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
+	resp := jsonResponse{
+		OK:      true,
+		Message: "Available!",
+	}
+
+	out, err := json.MarshalIndent(resp, "", "     ")
+	if err != nil {
+		log.Println(err)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(out)
 }
 func (r *Handler) Contact(w http.ResponseWriter, req *http.Request) {
 	render.RenderTemplate(w, basePath+"/templates/contact.page.tmpl", nil)

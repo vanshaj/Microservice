@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+
+	"github.com/justinas/nosurf"
 )
 
 func SetCookie(next http.Handler) http.Handler {
@@ -34,4 +36,17 @@ func GetIP(next http.Handler) http.Handler {
 
 func SessionLoad(next http.Handler) http.Handler {
 	return app.SessionManager.LoadAndSave(next)
+}
+
+// NoSurf is the csrf protection middleware
+func NoSurf(next http.Handler) http.Handler {
+	csrfHandler := nosurf.New(next)
+
+	csrfHandler.SetBaseCookie(http.Cookie{
+		HttpOnly: true,
+		Path:     "/",
+		Secure:   app.InProduction,
+		SameSite: http.SameSiteLaxMode,
+	})
+	return csrfHandler
 }

@@ -1,6 +1,6 @@
 package models
 
-import "github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/forms"
+import "github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/forms"
 
 // TemplateData holds data sent from handlers to templates
 type TemplateData struct {

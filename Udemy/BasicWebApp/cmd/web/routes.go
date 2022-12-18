@@ -1,11 +1,12 @@
 package main
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/handlers"
-	"net/http"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/handlers"
 )
 
 func routes(app *config.AppConfig) http.Handler {

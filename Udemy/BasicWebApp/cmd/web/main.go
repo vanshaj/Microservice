@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/alexedwards/scs/v2"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/handlers"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/models"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/render"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/handlers"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/models"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/render"
 )
 
 const portNumber = ":8080"

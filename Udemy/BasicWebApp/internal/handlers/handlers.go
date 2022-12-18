@@ -3,12 +3,13 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/forms"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/models"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/render"
 	"log"
 	"net/http"
+
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/forms"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/models"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/render"
 )
 
 // Repo the repository used by the handlers

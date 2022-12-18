@@ -1,4 +1,4 @@
-module github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app
+module github.com/vanshaj/Microservice/Udemy/BasicWebApp
 
 go 1.15
 

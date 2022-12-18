@@ -3,13 +3,14 @@ package render
 import (
 	"bytes"
 	"fmt"
-	"github.com/justinas/nosurf"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
-	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/models"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
+
+	"github.com/justinas/nosurf"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/internal/models"
 )
 
 var functions = template.FuncMap{}

@@ -3,10 +3,10 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/tsawler/bookings-app/internal/config"
-	"github.com/tsawler/bookings-app/internal/forms"
-	"github.com/tsawler/bookings-app/internal/models"
-	"github.com/tsawler/bookings-app/internal/render"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/forms"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/models"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/render"
 	"log"
 	"net/http"
 )

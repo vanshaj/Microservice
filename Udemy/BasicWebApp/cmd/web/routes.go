@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
-	"github.com/tsawler/bookings-app/internal/config"
-	"github.com/tsawler/bookings-app/internal/handlers"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/config"
+	"github.com/vanshaj/Microservice/Udemy/BasicWebApp/bookings-app/internal/handlers"
 	"net/http"
 )
 

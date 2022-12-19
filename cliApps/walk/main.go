@@ -23,8 +23,6 @@ func main() {
 	root := flag.String("root", "/tmp", "root the files")
 	del := flag.Bool("del", false, "delete the files")
 	flag.Parse()
-	log.Println("value of list is ", *list)
-	log.Println("value of  del is ", *del)
 	c := comfig{
 		*ext, *size, *list, *del,
 	}

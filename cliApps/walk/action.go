@@ -20,3 +20,6 @@ func filterout(path string, extension string, size int64, info fs.FileInfo) bool
 func listfile(w io.Writer, path string) {
 	fmt.Fprintf(w, "%s\n", path)
 }
+func deletefile(path string) {
+	return os.Remove(path)
+}

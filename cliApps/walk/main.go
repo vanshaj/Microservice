@@ -4,6 +4,7 @@ import (
 	"flag"
 	"io"
 	"io/fs"
+	"log"
 	"os"
 	"path/filepath"
 )
@@ -12,6 +13,7 @@ type comfig struct {
 	ext  string
 	size int64
 	list bool
+	del  bool
 }
 
 func main() {
@@ -19,12 +21,16 @@ func main() {
 	size := flag.Int64("size", 0, "min size for file")
 	list := flag.Bool("list", true, "list the files")
 	root := flag.String("root", "/tmp", "root the files")
+	del := flag.Bool("del", false, "delete the files")
 	flag.Parse()
+	log.Println("value of list is ", *list)
+	log.Println("value of  del is ", *del)
 	c := comfig{
-		*ext, *size, *list,
+		*ext, *size, *list, *del,
 	}
 	err := run(*root, os.Stdout, c)
 	if err != nil {
+		log.Fatal(err)
 	}
 }
 
@@ -38,7 +44,15 @@ func run(path string, w io.Writer, c comfig) error {
 			if !observed {
 				return nil
 			}
-			listfile(w, path)
+			if c.list {
+				listfile(w, path)
+			}
+			if c.del {
+				err := deletefile(path)
+				if err != nil {
+					return err
+				}
+			}
 			return nil
 		})
 	return err

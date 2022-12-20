@@ -14,8 +14,8 @@ func TestRun(t *testing.T) {
 		c        comfig
 		expected string
 	}{
-		{"EmptyDirectory", "./testdata/empty/", comfig{".txt", 32, true, false}, ""},
-		{"TextFile", "./testdata", comfig{".txt", 20, true, false}, "testdata/hello.txt\n"},
+		{"EmptyDirectory", "./testdata/empty/", comfig{".txt", 32, true, false, &bytes.Buffer{}}, ""},
+		{"TextFile", "./testdata", comfig{".txt", 20, true, false, &bytes.Buffer{}}, "testdata/hello.txt\n"},
 	}
 
 	for _, tc := range testCases {
@@ -60,7 +60,7 @@ func TestDelExtension(t *testing.T) {
 		nNoDelete   int
 		exoected    string
 	}{
-		{"DeleteExtNoMatch", comfig{ext: ".log", del: true}, ".gz", 0, 10, ""},
+		{"DeleteExtNoMatch", comfig{ext: ".log", del: true, wLog: &bytes.Buffer{}}, ".gz", 0, 10, ""},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {

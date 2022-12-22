@@ -14,8 +14,8 @@ func TestRun(t *testing.T) {
 		c        comfig
 		expected string
 	}{
-		{"EmptyDirectory", "./testdata/empty/", comfig{".txt", 32, true, false, &bytes.Buffer{}}, ""},
-		{"TextFile", "./testdata", comfig{".txt", 20, true, false, &bytes.Buffer{}}, "testdata/hello.txt\n"},
+		{"EmptyDirectory", "./testdata/empty/", comfig{".txt", 32, true, false, &bytes.Buffer{}, ""}, ""},
+		{"TextFile", "./testdata", comfig{".txt", 20, true, false, &bytes.Buffer{}, ""}, "testdata/hello.txt\n"},
 	}
 
 	for _, tc := range testCases {

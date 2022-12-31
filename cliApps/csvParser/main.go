@@ -19,12 +19,12 @@ func main() {
 }
 
 func run(filenames []string, operation string, column int, w io.Writer) error {
-	var opFunc statFunc
+	var opFunc stat
 	switch operation {
 	case "sum":
-		opFunc = sum
+		opFunc = statFunc(sum)
 	case "avg":
-		opFunc = avg
+		opFunc = statFunc(avg)
 	default:
 		return ErrInvalidOperation
 	}
@@ -48,6 +48,6 @@ func run(filenames []string, operation string, column int, w io.Writer) error {
 		}
 		consolidate = append(consolidate, data...)
 	}
-	_, err := fmt.Fprintln(w, opFunc(consolidate))
+	_, err := fmt.Fprintln(w, opFunc.operation(consolidate))
 	return err
 }

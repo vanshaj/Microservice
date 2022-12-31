@@ -6,7 +6,15 @@ import (
 	"strconv"
 )
 
-type statFunc func(data []float64) float64
+type statFunc func([]float64) float64
+
+func (s statFunc) operation(data []float64) float64 {
+	return s(data)
+}
+
+type stat interface {
+	operation(data []float64) float64
+}
 
 func sum(data []float64) float64 {
 	var sum float64

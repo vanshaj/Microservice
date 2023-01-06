@@ -35,7 +35,7 @@ func run(filenames []string, operation string, column int, w io.Writer) error {
 			return err
 		}
 		if fileInfo.IsDir() {
-			return ErrFileNotFound
+			return ErrNoFiles
 		}
 		f, err := os.Open(filename)
 		defer f.Close()

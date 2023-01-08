@@ -16,6 +16,7 @@ func main() {
 	dir := flag.Bool("dir", false, "is directory passed")
 	flag.Parse()
 	err := run(flag.Args(), *op, *col, *dir, os.Stdout)
+	fmt.Println("Inside main number of goroutines are: ", runtime.NumGoroutine())
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -88,7 +89,7 @@ func run(filenames []string, operation string, column int, dir bool, w io.Writer
 	for {
 		select {
 		case err := <-errCh:
-			return err
+			return err //log.Println(err) if you want all go routines to be closed properly rather than leaking them
 		case data := <-resCh:
 			consolidate = append(consolidate, data...)
 		case <-doneCh:

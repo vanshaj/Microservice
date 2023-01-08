@@ -71,7 +71,7 @@ func TestRun(t *testing.T) {
 }
 
 func BenchmarkRun(b *testing.B) {
-	filenames, err := filepath.Glob("/home/ubuntu/Projects/Microservice/cliApps/csvParser/testdata/benchmark/.*csv")
+	filenames, err := filepath.Glob("/home/ubuntu/Projects/Microservice/cliApps/csvParser/testdata/benchmark/*.csv")
 	if err != nil {
 		b.Fatal(err)
 	}

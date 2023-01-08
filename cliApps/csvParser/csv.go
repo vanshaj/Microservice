@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"strconv"
 )
@@ -32,17 +33,21 @@ func avg(data []float64) float64 {
 
 func csvToFloat(r io.Reader, column int) ([]float64, error) {
 	csvR := csv.NewReader(r)
-	data, err := csvR.ReadAll()
-	if err != nil {
-		return nil, err
-	}
+	csvR.ReuseRecord = true
 	returnData := make([]float64, 0)
-	if len(data[0]) <= column {
-		return nil, ErrInvalidColumn
-	}
-	for i, row := range data {
+	for i := 0; ; i++ {
+		row, err := csvR.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("can't read data from file")
+		}
 		if i == 0 {
 			continue
+		}
+		if len(row) <= column {
+			return nil, ErrInvalidColumn
 		}
 		value, err := strconv.ParseFloat(row[column], 64)
 		if err != nil {

@@ -3,7 +3,9 @@ package main
 import (
 	"bytes"
 	"errors"
+	"io"
 	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -43,7 +45,7 @@ func TestRun(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			var res bytes.Buffer
-			err := run(tc.files, tc.op, tc.col, &res)
+			err := run(tc.files, tc.op, tc.col, false, &res)
 
 			if tc.expErr != nil {
 				if err == nil {
@@ -65,5 +67,18 @@ func TestRun(t *testing.T) {
 				t.Errorf("Expected %q, got %q instead", tc.exp, &res)
 			}
 		})
+	}
+}
+
+func BenchmarkRun(b *testing.B) {
+	filenames, err := filepath.Glob("/home/ubuntu/Projects/Microservice/cliApps/csvParser/testdata/benchmark/.*csv")
+	if err != nil {
+		b.Fatal(err)
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		if err := run(filenames, "avg", 1, false, io.Discard); err != nil {
+			b.Error(err)
+		}
 	}
 }

@@ -44,8 +44,9 @@ func run(filenames []string, operation string, column int, dir bool, w io.Writer
 	}
 	resCh := make(chan []float64)
 	errCh := make(chan error)
-	doneCh := make(chan struct{})
+	quit := make(chan int)
 	filesCh := make(chan string)
+	jobsCh := make(chan string)
 
 	wg := sync.WaitGroup{}
 
@@ -55,46 +56,71 @@ func run(filenames []string, operation string, column int, dir bool, w io.Writer
 			filesCh <- filename
 		}
 	}()
-
+	go func() {
+		for {
+			select {
+			case fn := <-filesCh:
+				if fn == "" {
+					log.Println("closing job channel positive")
+					close(jobsCh)
+					return
+				}
+				jobsCh <- fn
+			case <-quit:
+				log.Println("closing job channel negative")
+				close(jobsCh)
+				return
+			}
+		}
+	}()
 	for i := 0; i < runtime.NumCPU(); i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for filename := range filesCh {
-				//fileInfo, err := os.Stat(filename)
-				//if err != nil {
-				//	errCh <- err
-				//}
-				//if fileInfo.IsDir() {
-				//	errCh <- ErrNoFiles
-				//}
-				f, err := os.Open(filename)
-				defer f.Close()
-				if err != nil {
-					errCh <- err
+			for {
+				select {
+				case filename := <-jobsCh:
+					if filename == "" {
+						log.Println("Job channel closed returning goroutine")
+						return
+					}
+					f, err := os.Open(filename)
+					defer f.Close()
+					if err != nil {
+						errCh <- err
+					}
+					data, err := csvToFloat(f, column)
+					if err != nil {
+						errCh <- err
+					}
+					resCh <- data
 				}
-				data, err := csvToFloat(f, column)
-				if err != nil {
-					errCh <- err
-				}
-				resCh <- data
 			}
 		}()
 	}
-
-	go func() {
-		wg.Wait()
-		close(doneCh)
-	}()
-	for {
+	for i := 0; i < len(filenames); i++ {
 		select {
 		case err := <-errCh:
-			return err //log.Println(err) if you want all go routines to be closed properly rather than leaking them
+			close(quit)
+			go func() {
+				for {
+					select {
+					case <-resCh:
+						continue
+					case <-errCh:
+						continue
+					}
+				}
+			}()
+			wg.Wait()
+			close(resCh)
+			close(errCh)
+			return err
 		case data := <-resCh:
 			consolidate = append(consolidate, data...)
-		case <-doneCh:
-			_, err := fmt.Fprintln(w, opFunc.operation(consolidate))
-			return err
 		}
 	}
+	wg.Wait()
+	_, err := fmt.Fprintln(w, opFunc.operation(consolidate))
+	return err
 }

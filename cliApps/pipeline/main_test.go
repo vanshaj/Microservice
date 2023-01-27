@@ -3,9 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
+	"os/signal"
+	"syscall"
 	"testing"
 	"time"
 )
@@ -90,6 +94,62 @@ func TestRun(t *testing.T) {
 					t.Fatalf("expected error in %s but got in %s", tc.expErr.(*stepErr).step, err.(*stepErr).step)
 				}
 
+			}
+		})
+	}
+}
+
+func TestRunKill(t *testing.T) {
+	var testCases = []struct {
+		name   string
+		proj   string
+		sig    syscall.Signal
+		expErr error
+	}{
+		{"SIGINT", "./testdata/tool", syscall.SIGINT, ErrSignal},
+		{"SIGTERM", "./testdata/tool", syscall.SIGTERM, ErrSignal},
+		{"SIGQUIT", "./testdata/tool", syscall.SIGQUIT, nil},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			command = mockCmdTimeout
+			errCh := make(chan error)
+			ignoreChannel := make(chan os.Signal, 3)
+			expectChannel := make(chan os.Signal, 1)
+
+			signal.Notify(ignoreChannel, syscall.SIGQUIT)
+			defer signal.Stop(ignoreChannel)
+
+			signal.Notify(expectChannel, tc.sig)
+			defer signal.Stop(expectChannel)
+
+			go func() {
+				errCh <- run(tc.proj, io.Discard)
+			}()
+
+			go func() {
+				time.Sleep(2 * time.Second)
+				syscall.Kill(syscall.Getpid(), tc.sig)
+			}()
+
+			select {
+			case err := <-errCh:
+				if err == nil {
+					t.Errorf("Expected error. Got 'nil' instead.")
+					return
+				}
+				if !errors.Is(err, tc.expErr) {
+					t.Errorf("Expected error: %q. Got %q", tc.expErr, err)
+				}
+				select {
+				case rec := <-expectChannel:
+					if rec != tc.sig {
+						t.Errorf("Expected signal: %q. Got %q", tc.sig, rec)
+					}
+				default:
+					t.Errorf("signal not received")
+				}
+			case <-ignoreChannel:
 			}
 		})
 	}

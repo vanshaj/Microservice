@@ -1,12 +1,19 @@
 package main
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type stepErr struct {
 	step  string
 	msg   string
 	cause error
 }
+
+var (
+	ErrSignal = errors.New("Received signal")
+)
 
 func (s *stepErr) Error() string {
 	return fmt.Sprintf("step %q: %s: Cause: %v", s.step, s.msg, s.cause)

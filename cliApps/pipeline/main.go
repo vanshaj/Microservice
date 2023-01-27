@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 )
 
@@ -19,6 +21,12 @@ func main() {
 }
 
 func run(dir string, out io.Writer) error {
+	sig := make(chan os.Signal, 1)
+	errCh := make(chan error)
+	done := make(chan struct{})
+
+	signal.Notify(sig, syscall.SIGINT, syscall.SIGTERM)
+
 	pipelines := make([]executor, 4)
 	pipelines[0] = newStep(
 		"Build",
@@ -45,12 +53,26 @@ func run(dir string, out io.Writer) error {
 		dir,
 		[]string{"push", "origin", "master"},
 		10*time.Second)
-	for _, pipeline := range pipelines {
-		msg, err := pipeline.execute()
-		if err != nil {
-			return err
+	go func() {
+		for _, pipeline := range pipelines {
+			msg, err := pipeline.execute()
+			if err != nil {
+				errCh <- err
+				return
+			}
+			fmt.Fprintln(out, msg)
 		}
-		fmt.Fprintln(out, msg)
+		close(done)
+	}()
+	for {
+		select {
+		case rec := <-sig:
+			signal.Stop(sig)
+			return fmt.Errorf("%s: Existing %w", rec, ErrSignal)
+		case err := <-errCh:
+			return err
+		case <-done:
+			return nil
+		}
 	}
-	return nil
 }

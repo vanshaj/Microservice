@@ -26,6 +26,10 @@ func TestRun(t *testing.T) {
 			dir:    "./testdata/toolerr_test",
 			expMsg: "",
 			expErr: &stepErr{step: "Test"}},
+		{name: "Error fmt",
+			dir:    "./testdata/toolerr_fmt",
+			expMsg: "",
+			expErr: &stepErr{step: "Format"}},
 	}
 
 	for _, tc := range testCases {

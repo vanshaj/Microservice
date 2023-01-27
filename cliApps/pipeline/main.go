@@ -18,7 +18,7 @@ func main() {
 }
 
 func run(dir string, out io.Writer) error {
-	pipelines := make([]*step, 2)
+	pipelines := make([]executor, 3)
 	pipelines[0] = newStep(
 		"Build",
 		"go",
@@ -31,6 +31,12 @@ func run(dir string, out io.Writer) error {
 		"Go test: Success",
 		dir,
 		[]string{"test", "-v", "./..."})
+	pipelines[2] = newExceptionStep(
+		"Format",
+		"gofmt",
+		"Go format: Success",
+		dir,
+		[]string{"-l", "."})
 	for _, pipeline := range pipelines {
 		msg, err := pipeline.execute()
 		if err != nil {

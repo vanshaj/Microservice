@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"time"
 )
 
 func main() {
@@ -18,7 +19,7 @@ func main() {
 }
 
 func run(dir string, out io.Writer) error {
-	pipelines := make([]executor, 3)
+	pipelines := make([]executor, 4)
 	pipelines[0] = newStep(
 		"Build",
 		"go",
@@ -37,6 +38,13 @@ func run(dir string, out io.Writer) error {
 		"Go format: Success",
 		dir,
 		[]string{"-l", "."})
+	pipelines[3] = newTimeoutStep(
+		"git push",
+		"git",
+		"Git Push: Success",
+		dir,
+		[]string{"push", "origin", "master"},
+		10*time.Second)
 	for _, pipeline := range pipelines {
 		msg, err := pipeline.execute()
 		if err != nil {

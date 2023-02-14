@@ -54,3 +54,29 @@ func TestLoad(t *testing.T) {
 		})
 	}
 }
+
+func TestSave(t *testing.T) {
+	testCases := []struct {
+		name                   string
+		ips                    []string
+		expectedStringInWriter string
+		expectedErr            error
+	}{
+		{"Save 3 ips", []string{"192.168.1.0", "192.168.1.1", "192.168.1.2"}, "192.168.1.0192.168.1.1192.168.1.2", nil},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			var b bytes.Buffer
+			h := &HostsList{tc.ips}
+			if err := h.Save(&b); err != nil {
+				if !errors.Is(err, tc.expectedErr) {
+					t.Fatalf("Expected error not mataches actual error. Expected '%v' but Actual '%v'", err, tc.expectedErr)
+				}
+			} else {
+				if tc.expectedStringInWriter != b.String() {
+					t.Fatalf("Expected string doesnot match actual, expected '%s' got '%s'", tc.expectedStringInWriter, b.String())
+				}
+			}
+		})
+	}
+}

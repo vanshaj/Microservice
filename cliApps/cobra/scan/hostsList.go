@@ -3,7 +3,9 @@ package scan
 import (
 	"bufio"
 	"errors"
+	"fmt"
 	"io"
+	"os"
 	"sort"
 )
 
@@ -54,6 +56,9 @@ func (h *HostsList) Load(r io.Reader) error {
 			return err
 		}
 	}
+	if err := scanner.Err(); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -63,6 +68,13 @@ func (h *HostsList) Save(w io.Writer) error {
 		if err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (h *HostsList) List() error {
+	for _, val := range h.Hosts {
+		fmt.Fprint(os.Stdout, val)
 	}
 	return nil
 }

@@ -64,7 +64,7 @@ func (h *HostsList) Load(r io.Reader) error {
 
 func (h *HostsList) Save(w io.Writer) error {
 	for _, val := range h.Hosts {
-		_, err := w.Write([]byte(val))
+		_, err := w.Write([]byte(val + "\n"))
 		if err != nil {
 			return err
 		}

@@ -1,28 +1,53 @@
 /*
 Copyright © 2023 NAME HERE <EMAIL ADDRESS>
-
 */
 package cmd
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/vanshaj/Microservice/cliApps/cobra/scan"
 )
 
 // deleteCmd represents the delete command
 var deleteCmd = &cobra.Command{
-	Use:   "delete",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("delete called")
+	Use:          "delete",
+	Short:        "delete hosts",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
+	RunE: func(cmd *cobra.Command, args []string) error {
+		hosts_file, err := cmd.Flags().GetString("hosts-file")
+		if err != nil {
+			return err
+		}
+		return deleteAction(os.Stdout, hosts_file, args)
 	},
+}
+
+func deleteAction(w io.Writer, hosts_file string, args []string) error {
+	f, err := os.OpenFile(hosts_file, os.O_CREATE|os.O_RDWR, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	h1 := &scan.HostsList{}
+	if err := h1.Load(f); err != nil {
+		return err
+	}
+	err = os.Truncate(hosts_file, 0)
+	if err != nil {
+		return err
+	}
+	for _, eachHost := range args {
+		if err := h1.Remove(eachHost); err != nil {
+			return err
+		}
+		fmt.Fprintln(w, "deleted host: ", eachHost)
+	}
+	return h1.Save(f)
 }
 
 func init() {

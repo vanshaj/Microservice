@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -33,12 +34,12 @@ var scanCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-		scanAction(hl, ports)
+		scanAction(os.Stdout, hl, ports)
 		return nil
 	},
 }
 
-func scanAction(hl *scan.HostsList, ports []int) {
+func scanAction(out io.Writer, hl *scan.HostsList, ports []int) {
 	results := scan.Run(hl, ports)
 	var message strings.Builder
 	for _, result := range results {
@@ -46,7 +47,7 @@ func scanAction(hl *scan.HostsList, ports []int) {
 			fmt.Fprintf(&message, "Host: %s has port %d in %s stage\n", result.Host, portState.Port, portState.Open.String())
 		}
 	}
-	fmt.Println(message.String())
+	fmt.Fprint(out, message.String())
 }
 
 func init() {
@@ -56,7 +57,7 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	scanCmd.PersistentFlags().IntSlice("ports", []int{80}, "list of ports to scan")
+	scanCmd.PersistentFlags().IntSliceP("ports", "p", []int{80}, "list of ports to scan")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

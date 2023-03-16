@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/vanshaj/Microservice/cliApps/cobra/scan"
 )
 
@@ -18,10 +19,7 @@ var scanCmd = &cobra.Command{
 	Use:   "scan",
 	Short: "scan the hosts",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		f, err := cmd.Flags().GetString("hosts-file")
-		if err != nil {
-			return err
-		}
+		f := viper.GetString("hosts-file")
 		hl := &scan.HostsList{}
 		fr, err := os.Open(f)
 		if err != nil {

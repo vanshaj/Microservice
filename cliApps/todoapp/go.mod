@@ -1,3 +1,3 @@
 module github.com/vanshaj/Microservice/cliApps/todoapp
 
-go 1.18
+go 1.20

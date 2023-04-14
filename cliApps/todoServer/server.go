@@ -17,6 +17,17 @@ func newMux(todoFile string) http.Handler {
 	return m
 }
 
+func replyEmptyContent(w http.ResponseWriter, r *http.Request, status int) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(status)
+}
+
+func replyTextContent(w http.ResponseWriter, r *http.Request, statusCode int, content string) {
+	w.Header().Set("Content-Type", "text/plain")
+	w.WriteHeader(statusCode)
+	w.Write([]byte(content))
+}
+
 func replyJSONContent(w http.ResponseWriter, r *http.Request, status int, resp *todoResponse) {
 	body, err := json.Marshal(resp)
 	if err != nil {
